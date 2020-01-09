@@ -7,19 +7,18 @@ This module will setup environment for AWS Device Farm
 import boto3
 import requests
 
-REGION = 'us-east-1' 
+REGION = 'us-west-2'
 PROJECT_NAME = 'edx-app-test'
 DEVICE_POOL_NAME = 'edx_devices_pool'
 
 status_flag = False
-device_farm = boto3.client('devicefarm', region_name=REGION)
-
+device_farm = boto3.client('devicefarm', REGION)
 
 def setup_aws_data():
     """
     setup data needed for AWS Device Farm
     """
-
+    
     target_project_arn = setup_project(PROJECT_NAME)
     setup_device_pool(target_project_arn, DEVICE_POOL_NAME)
 

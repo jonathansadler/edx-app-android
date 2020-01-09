@@ -8,7 +8,7 @@ import sys
 import boto3 
 import requests
 
-REGION = 'us-east-1'
+REGION = 'us-west-2'
 PROJECT_NAME = 'edx-app-test'
 DEVICE_POOL_NAME = 'edx_devices_pool'
 ANDROID_APP_UPLOAD_TYPE = 'ANDROID_APP'
@@ -197,6 +197,34 @@ def get_test_run(run_arn):
                                                                              run_results
                                                                             ))
 
+def _poll_until(method, arn, get_status_callable, success_statuses, timeout_seconds=10):
+    check_every_seconds = 10 
+    if timeout_seconds == RUN_TIMEOUT_SECONDS else 1
+    start = time.time()
+    while True:
+        result = method(arn=arn)
+        current_status = get_status_callable(result)
+        if current_status in success_statuses:
+            return result
+        logger.info('Waiting for %r status %r to be in %r' % (arn, current_status, success_statuses))
+        now = time.time()
+        if now - start > timeout_seconds:
+            raise StopIteration('Time out waiting for %r to be done' % arn)
+        time.sleep(check_every_seconds)
 
+
+def wait_for_run(test_package_arn):
+    result = _poll_until(
+        device_farm.get_run,
+        test_package_arn,
+        get_status_callable=lambda x: x['run']['status'],
+        success_statuses=('COMPLETED', ),
+        timeout_seconds=RUN_TIMEOUT_SECONDS,
+    )
+    final_run = result['run']
+    logger.info('Final run counts: %(counters)s' % final_run)
+    return final_run['result'] == 'PASSED'
+
+    
 if __name__ == '__main__':
     aws_job()
