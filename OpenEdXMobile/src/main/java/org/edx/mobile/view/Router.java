@@ -436,7 +436,11 @@ public class Router {
     }
 
     public void showAccountActivity(@NonNull Activity activity) {
-        activity.startActivity(AccountActivity.newIntent(activity));
+        activity.startActivity(AccountActivity.newIntent(activity, null));
+    }
+
+    public void showAccountActivity(@NonNull Activity activity, @Nullable @ScreenDef String screenName) {
+        activity.startActivity(AccountActivity.newIntent(activity, screenName));
     }
 
     public void showSubjectsActivityForResult(@NonNull Fragment fragment, int requestCode) {
