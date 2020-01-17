@@ -63,7 +63,7 @@ import org.edx.mobile.services.CourseManager;
 import org.edx.mobile.services.EdxCookieManager;
 import org.edx.mobile.services.LastAccessManager;
 import org.edx.mobile.services.VideoDownloadHelper;
-import org.edx.mobile.util.AppConstants;
+import org.edx.mobile.util.ConfigUtil;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.util.PermissionsUtil;
 import org.edx.mobile.util.UiUtil;
@@ -572,16 +572,7 @@ public class CourseOutlineFragment extends OfflineSupportBaseFragment
         if (!isOnCourseOutline || isVideoMode || getCourseUpgradeStatus != null) {
             return;
         }
-        if (environment.getConfig().getFirebaseConfig().isEnabled()) {
-            final FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-            firebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(task -> {
-                final boolean courseUpgradeEnabled = firebaseRemoteConfig
-                        .getBoolean(AppConstants.FirebaseConstants.REV_934_ENABLED);
-                if (courseUpgradeEnabled) {
-                    fetchCourseUpgradeStatus();
-                }
-            });
-        }
+        ConfigUtil.INSTANCE.isReleaseWhiteListed(environment.getConfig(), this::fetchCourseUpgradeStatus);
     }
 
     private void fetchCourseUpgradeStatus() {
