@@ -24,6 +24,7 @@ import org.edx.mobile.discussion.DiscussionComment;
 import org.edx.mobile.discussion.DiscussionThread;
 import org.edx.mobile.discussion.DiscussionTopic;
 import org.edx.mobile.event.LogoutEvent;
+import org.edx.mobile.model.api.CourseUpgradeResponse;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
 import org.edx.mobile.module.analytics.AnalyticsRegistry;
 import org.edx.mobile.module.notification.NotificationDelegate;
@@ -46,6 +47,7 @@ public class Router {
     public static final String EXTRA_COURSE_ID = "course_id";
     public static final String EXTRA_COURSE_DETAIL = "course_detail";
     public static final String EXTRA_COURSE_DATA = "course_data";
+    public static final String EXTRA_COURSE_UPGRADE_DATA = "course_upgrade_data";
     public static final String EXTRA_COURSE_UNIT = "course_unit";
     public static final String EXTRA_COURSE_COMPONENT_ID = "course_component_id";
     public static final String EXTRA_LAST_ACCESSED_ID = "last_accessed_id";
@@ -163,11 +165,11 @@ public class Router {
                 topicId, threadId, announcements, screenName));
     }
 
-    public void showCourseUpgradeWebViewActivity(@NonNull Activity sourceActivity,
+    public void showCourseUpgradeWebViewActivity(@NonNull Context context,
                                                  @NonNull String webUrl) {
-        sourceActivity.startActivity(
-                CourseUpgradeWebViewActivity.newIntent(sourceActivity, webUrl,
-                        sourceActivity.getResources().getString(R.string.place_order_title))
+        context.startActivity(
+                CourseUpgradeWebViewActivity.newIntent(context, webUrl,
+                        context.getResources().getString(R.string.place_order_title))
         );
     }
 
@@ -198,50 +200,43 @@ public class Router {
                 .startActivities();
     }
 
-    public void showCourseContainerOutline(Activity activity, EnrolledCoursesResponse model,
+    public void showCourseContainerOutline(Activity activity, EnrolledCoursesResponse courseData,
+                                           CourseUpgradeResponse courseUpgradeData,
                                            String courseComponentId) {
-        showCourseContainerOutline(activity, -1, model, courseComponentId, null, false);
+        showCourseContainerOutline(activity, -1, courseData, courseUpgradeData,
+                courseComponentId, null, false);
     }
 
     public void showCourseContainerOutline(Activity activity, int requestCode,
-                                           EnrolledCoursesResponse model, String courseComponentId,
+                                           EnrolledCoursesResponse courseData,
+                                           CourseUpgradeResponse courseUpgradeData,
+                                           String courseComponentId,
                                            String lastAccessedId, boolean isVideosMode) {
-        Intent courseDetail = createCourseOutlineIntent(activity, model, courseComponentId,
-                lastAccessedId, isVideosMode);
+        Intent courseDetail = CourseOutlineActivity.newIntent(activity, courseData,
+                courseUpgradeData, courseComponentId, lastAccessedId, isVideosMode);
         //TODO - what's the most suitable FLAG?
         // courseDetail.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         activity.startActivityForResult(courseDetail, requestCode);
     }
 
     public void showCourseContainerOutline(Fragment fragment, int requestCode,
-                                           EnrolledCoursesResponse model, String courseComponentId,
+                                           EnrolledCoursesResponse courseData,
+                                           CourseUpgradeResponse courseUpgradeData,
+                                           String courseComponentId,
                                            String lastAccessedId, boolean isVideosMode) {
-        Intent courseDetail = createCourseOutlineIntent(fragment.getActivity(), model,
-                courseComponentId, lastAccessedId, isVideosMode);
+        Intent courseDetail = CourseOutlineActivity.newIntent(fragment.getActivity(),
+                courseData, courseUpgradeData, courseComponentId, lastAccessedId, isVideosMode);
         //TODO - what's the most suitable FLAG?
         // courseDetail.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         fragment.startActivityForResult(courseDetail, requestCode);
     }
 
-    private Intent createCourseOutlineIntent(Activity activity, EnrolledCoursesResponse model,
-                                             String courseComponentId, String lastAccessedId,
-                                             boolean isVideosMode) {
-        Bundle courseBundle = new Bundle();
-        courseBundle.putSerializable(EXTRA_COURSE_DATA, model);
-        courseBundle.putString(EXTRA_COURSE_COMPONENT_ID, courseComponentId);
-
-        final Intent intent = new Intent(activity, CourseOutlineActivity.class);
-        intent.putExtra(EXTRA_BUNDLE, courseBundle);
-        intent.putExtra(EXTRA_LAST_ACCESSED_ID, lastAccessedId);
-        intent.putExtra(EXTRA_IS_VIDEOS_MODE, isVideosMode);
-
-        return intent;
-    }
-
     public void showCourseUnitDetail(Fragment fragment, int requestCode, EnrolledCoursesResponse model,
+                                     CourseUpgradeResponse courseUpgradeData,
                                      String courseComponentId, boolean isVideosMode) {
         Bundle courseBundle = new Bundle();
         courseBundle.putSerializable(EXTRA_COURSE_DATA, model);
+        courseBundle.putSerializable(EXTRA_COURSE_UPGRADE_DATA, courseUpgradeData);
         courseBundle.putSerializable(EXTRA_COURSE_COMPONENT_ID, courseComponentId);
 
         Intent courseDetail = new Intent(fragment.getActivity(), CourseUnitNavigationActivity.class);
@@ -437,6 +432,11 @@ public class Router {
 
     public void showAccountActivity(@NonNull Activity activity) {
         activity.startActivity(AccountActivity.newIntent(activity));
+    }
+
+    public void showPaymentsInfoActivity(@NonNull Context context, @NonNull EnrolledCoursesResponse courseDate,
+                                         @NonNull CourseUpgradeResponse courseUpgrade) {
+        context.startActivity(PaymentsInfoActivity.Companion.newIntent(context, courseDate, courseUpgrade));
     }
 
     public void showSubjectsActivityForResult(@NonNull Fragment fragment, int requestCode) {

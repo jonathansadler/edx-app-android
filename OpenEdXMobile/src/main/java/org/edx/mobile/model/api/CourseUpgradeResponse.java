@@ -2,7 +2,9 @@ package org.edx.mobile.model.api;
 
 import com.google.gson.annotations.SerializedName;
 
-public class CourseUpgradeResponse {
+import java.io.Serializable;
+
+public class CourseUpgradeResponse implements Serializable {
 
     @SerializedName("show_upsell")
     private boolean showUpsell;
