@@ -38,13 +38,21 @@ class PaymentsBannerFragment : BaseFragment() {
 
         fun loadPaymentsBannerFragment(containerId: Int, courseData: EnrolledCoursesResponse,
                                        courseUpgradeData: CourseUpgradeResponse, showInfoButton: Boolean,
-                                       childFragmentManager: FragmentManager) {
+                                       childFragmentManager: FragmentManager, animate: Boolean) {
+            val frag: Fragment? = childFragmentManager.findFragmentByTag("payment_banner_frag")
+            if (frag != null) {
+                // Payment banner already exists
+                return
+            }
             val fragment: Fragment = newInstance(courseData, courseUpgradeData, showInfoButton)
             // This activity will only ever hold this lone fragment, so we
             // can afford to retain the instance during activity recreation
             fragment.retainInstance = true
             val fragmentTransaction: FragmentTransaction = childFragmentManager.beginTransaction()
-            fragmentTransaction.add(containerId, fragment)
+            if(animate) {
+                fragmentTransaction.setCustomAnimations(R.anim.slide_up, android.R.anim.fade_out)
+            }
+            fragmentTransaction.replace(containerId, fragment, "payment_banner_frag")
             fragmentTransaction.disallowAddToBackStack()
             fragmentTransaction.commitAllowingStateLoss()
         }

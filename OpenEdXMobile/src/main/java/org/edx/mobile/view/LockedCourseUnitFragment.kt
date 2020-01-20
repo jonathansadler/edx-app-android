@@ -54,9 +54,10 @@ class LockedCourseUnitFragment : CourseUnitFragment() {
         }
     }
 
-    private fun loadPaymentBannerFragment(courseData: EnrolledCoursesResponse, courseUpgradeData: CourseUpgradeResponse) {
+    private fun loadPaymentBannerFragment(courseData: EnrolledCoursesResponse,
+                                          courseUpgradeData: CourseUpgradeResponse) {
         PaymentsBannerFragment.loadPaymentsBannerFragment(R.id.fragment_container, courseData,
-                courseUpgradeData, false, childFragmentManager)
+                courseUpgradeData, false, childFragmentManager, false)
     }
 
     override fun onDestroyView() {

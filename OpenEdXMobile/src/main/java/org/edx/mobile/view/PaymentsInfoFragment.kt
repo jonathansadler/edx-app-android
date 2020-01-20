@@ -54,6 +54,6 @@ class PaymentsInfoFragment : BaseFragment() {
 
         val courseUpgradeData = arguments?.getSerializable(Router.EXTRA_COURSE_UPGRADE_DATA) as CourseUpgradeResponse
         PaymentsBannerFragment.loadPaymentsBannerFragment(R.id.fragment_container, courseData,
-                courseUpgradeData, false, childFragmentManager)
+                courseUpgradeData, false, childFragmentManager, false)
     }
 }

@@ -596,9 +596,14 @@ public class CourseOutlineFragment extends OfflineSupportBaseFragment
                                 && !TextUtils.isEmpty(courseUpgradeData.getBasketUrl())) {
                             PaymentsBannerFragment.Companion.loadPaymentsBannerFragment(
                                     R.id.fragment_container, courseData,
-                                    courseUpgradeData, true, getChildFragmentManager());
+                                    courseUpgradeData, true, getChildFragmentManager(), true);
                             EventBus.getDefault().postSticky(new CourseUpgradeDataReceivedEvent(
                                     courseData.getCourse().getId(), courseUpgradeData));
+                        } else {
+                            final View view = getView();
+                            if(view != null) {
+                                view.findViewById(R.id.fragment_container).setVisibility(View.GONE);
+                            }
                         }
                     }
                 }
