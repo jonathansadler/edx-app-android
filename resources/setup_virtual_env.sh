@@ -55,5 +55,9 @@ check_and_install_virtualenv
 create_or_switch_to_virtual_environment
 print_message "setup AWS"
 python ./resources/setup_aws.py
+AUT = "$APK_PATH/*.apk"
+Test_Package = "$TEST_PROJECT_REPO_NAME/test_bundle.zip"
+print $AUT
+print $Test_Package
 print_message "calling AWS Test run"
-python ./resources/trigger_aws_test_run.py $APK_PATH "$TEST_PROJECT_REPO_NAME/test_bundle.zip"
+python ./resources/trigger_aws_test_run.py $AUT $Test_Package
