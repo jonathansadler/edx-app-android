@@ -208,7 +208,7 @@ def get_device_info(target_project_arn):
                     "values": ['PUBLIC', ]
                 }
             ])['devices']
-            
+
         if device_info is not None:
             device_arn = device_info[0]['arn']
             device_name = device_info[0]['name']
@@ -234,7 +234,7 @@ def get_device_info(target_project_arn):
             print('Problem finding device info')
 
     except IndexError:
-        print('Problem finding device from pool')
+        print('Problem finding device from pool {}'.format(device_info))
         sys.exit()
 
 
